@@ -1,4 +1,4 @@
-function l10=get_l10_coeff(gamma,alpha)
+function l10=get_l10_old(gamma,alpha)
 % Calculates Lyapunov coefficient using method from Kusznetsov's textbook
 num_var=2; % CHANGE
 % currently implemented for 2 variable model, you need to change this
