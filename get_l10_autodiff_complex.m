@@ -1,7 +1,7 @@
 function l10 = get_l10_autodiff_complex(Frhs,x0)
 % construct B(x,y,ind) and C(x,y,z,ind)
 for ind=1:numel(Frhs)
-    [~,dydx(ind,:),dy2dx(:,:,ind),dy3dx(:,:,:,ind)]=dlfeval(@(x) get_diffmat(x,@(w) Frhs{ind}(w)),x0);
+    [~,dydx(ind,:),dy2dx(:,:,ind),dy3dx(:,:,:,ind)]=dlfeval(@(x) get_diffmat_realpart(x,@(w) Frhs{ind}(w)),x0);
 end
 dy2dx=extractdata(dy2dx);
 dy3dx=extractdata(dy3dx);
@@ -43,6 +43,22 @@ end
 for ii=1:n
     for jj=1:n
         dy3dx(ii,jj,:)=dlgradient(dy2dx(ii,jj),x);
+    end
+end
+end
+
+
+function [y,dydx,dy2dx,dy3dx] = get_diffmat_realpart(x,Frhs)
+% TODO: figure out how to pre-allocate a dlarray
+n=numel(x);
+y = Frhs(x);
+dydx = real(dlgradient(y,x,'EnableHigherDerivatives',true));
+for ii=1:n
+    dy2dx(ii,1:n)= real(dlgradient(dydx(ii),x,'EnableHigherDerivatives',true));
+end
+for ii=1:n
+    for jj=1:n
+        dy3dx(ii,jj,:)=real(dlgradient(dy2dx(ii,jj),x));
     end
 end
 end
